@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>買い出しリスト</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <h1>買い出しリスト</h1>
+  <nav>
+    <button data-view="list" class="nav active">商品一覧</button>
+    <button data-view="selected" class="nav">選択商品<span id="navCount"></span></button>
+    <button data-view="history" class="nav">購入履歴</button>
+  </nav>
+  <span id="categoryCounts" class="category-counts"></span>
+  <button id="rakuchinBtn" class="rakuchin-btn">楽チン</button>
+  <button id="rakuchinGo" class="primary" hidden>反映へ進む</button>
+  <div class="topbar-right">
+    <span id="fetchedAt" class="muted"></span>
+    <button id="refreshBtn">商品情報更新</button>
+  </div>
+</header>
+
+<div id="notice" class="notice" hidden></div>
+
+<main>
+  <section id="view-list">
+    <div class="tabs" id="tabs"></div>
+    <div class="controls">
+      <input id="search" type="search" placeholder="商品名で検索（全カテゴリー）" aria-label="商品名で検索">
+      <label>並び替え
+        <select id="sort">
+          <option value="price_asc">価格が安い順</option>
+          <option value="price_desc">価格が高い順</option>
+          <option value="name">商品名の五十音順</option>
+          <option value="content_desc">内容量が多い順</option>
+          <option value="content_asc">内容量が少ない順</option>
+        </select>
+      </label>
+      <label class="check" id="prevFilterLabel"><input type="checkbox" id="prevFilter"> 前回購入した商品</label>
+    </div>
+    <div class="controls">
+      <button id="selCategory">現在のカテゴリーをすべて選択</button>
+      <button id="sel3" title="日用品以外の3カテゴリーの商品をすべて選択します">3カテゴリーすべての商品を選択</button>
+      <button id="selShown" title="検索・絞り込みで表示中の商品をすべて選択します">すべて選択</button>
+      <button id="selNone">すべて解除</button>
+      <strong id="selCount" class="sel-count">選択中：0商品</strong>
+    </div>
+    <div id="listBody" class="grid"></div>
+    <p id="listEmpty" class="empty" hidden>表示できる商品がありません。</p>
+    <p id="listNote" class="muted"></p>
+  </section>
+
+  <section id="view-selected" hidden>
+    <div id="selectedBody" class="grid"></div>
+    <p id="selectedEmpty" class="empty" hidden>選択中の商品はありません。</p>
+    <div class="actions">
+      <button id="clearSelected" disabled>すべて解除</button>
+    </div>
+
+    <div class="panel">
+      <h2>転記先</h2>
+      <p id="saNote" class="muted"></p>
+      <label class="field">スプレッドシートのURL
+        <span class="row">
+          <input id="sheetUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/...">
+          <button id="sheetLoad">シートを読み込む</button>
+        </span>
+      </label>
+      <label class="field">転記先のシート
+        <select id="sheetTab"></select>
+      </label>
+      <label class="check cooperative"><input type="checkbox" id="cooperative"> 協力モード</label>
+      <p class="muted">オンにすると、今回選んだ商品のジャンルだけを置き換え、ほかのジャンルの商品データはシートに書かれたまま残します。</p>
+      <p id="sheetError" class="error" hidden></p>
+    </div>
+    <div class="actions">
+      <button id="backToList">商品一覧に戻る</button>
+      <button id="confirmBtn" class="primary" disabled>確定</button>
+    </div>
+  </section>
+
+  <section id="view-history" hidden>
+    <p class="muted">直近5回の転記をまとめて表示しています。</p>
+    <div id="historyBody" class="grid"></div>
+    <p id="historyEmpty" class="empty" hidden>購入履歴はまだありません。</p>
+  </section>
+</main>
+
+<div id="bottomBar" class="bottom-bar">
+  <div class="tabs" id="bottomTabs"></div>
+</div>
+
+<div id="loading" class="loading" hidden>
+  <div class="loading-box">
+    <p id="loadingMsg">商品情報を取得中...</p>
+    <div class="track">
+      <div class="dog-lane">
+        <canvas id="shiba" width="84" height="84"></canvas>
+      </div>
+      <div class="bar"><div id="barFill" class="bar-fill"></div></div>
+    </div>
+    <p id="percent" class="percent">0%</p>
+    <div id="errorBox" hidden>
+      <p class="error">商品情報を取得できませんでした。</p>
+      <details><summary>エラー内容を確認</summary><pre id="errorDetail"></pre></details>
+      <div class="actions">
+        <button id="closeError" hidden>閉じる</button>
+        <button id="retryBtn" class="primary">再試行</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="confirmDialog">
+  <p id="confirmText">指定したシートの既存の商品データをすべて削除し、今回選択した商品に置き換えます。よろしいですか？</p>
+  <div class="actions">
+    <button id="dialogNo">いいえ</button>
+    <button id="dialogYes" class="primary">はい</button>
+  </div>
+</dialog>
+
+<script src="shiba.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
